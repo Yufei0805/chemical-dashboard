@@ -9,8 +9,11 @@
 
 import akshare as ak
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import pandas as pd
+
+# 设置北京时区
+BEIJING_TZ = timezone(timedelta(hours=8))
 
 def calculate_period_change(df, symbol, days):
     """计算指定周期的涨跌幅（按日历天数）"""
@@ -192,7 +195,7 @@ def generate_akshare_html_fast():
 
     html_content = html_content.replace(
         '/* UPDATE_TIME_PLACEHOLDER */',
-        f'const updateTime = "{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}";'
+        f'const updateTime = "{datetime.now(BEIJING_TZ).strftime("%Y-%m-%d %H:%M:%S")}";'
     )
 
     # 保存静态HTML
@@ -203,9 +206,10 @@ def generate_akshare_html_fast():
     print("\n" + "="*80)
     print(f"✓ AkShare版HTML已生成: {output_file}")
     print(f"✓ 化工品数量: {len(all_data)} 个")
-    print(f"✓ 数据更新时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"✓ 数据更新时间: {datetime.now(BEIJING_TZ).strftime('%Y-%m-%d %H:%M:%S')} (北京时间)")
     print(f"✓ 访问地址: http://192.168.77.12:8000/Chemical_Dashboard/chemical_dashboard_akshare.html")
     print("="*80)
 
 if __name__ == "__main__":
     generate_akshare_html_fast()
+
