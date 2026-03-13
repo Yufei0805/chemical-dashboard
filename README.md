@@ -24,6 +24,6 @@ python generate_akshare_dashboard_fast.py
 ```
 
 ## 更新时间
-- 每天北京时间 9:00
-- 每天北京时间 13:00
+- 每天北京时间 19:00
+
 
