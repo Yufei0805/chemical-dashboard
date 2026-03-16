@@ -241,7 +241,6 @@ def generate_akshare_html_fast():
             {'name': '中国石油', 'code': '601857'},
             {'name': '上海石化', 'code': '600688'},
             {'name': '博汇股份', 'code': '300839'},
-            {'name': '龙宇燃油', 'code': '603003'},
             {'name': '荣盛石化', 'code': '002493'}
         ],
         '沥青': [
