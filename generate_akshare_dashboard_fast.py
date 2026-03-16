@@ -210,7 +210,6 @@ def generate_akshare_html_fast():
         ],
         '短纤': [
             {'name': '三友化工', 'code': '600409'},
-            {'name': '澳洋健康', 'code': '002172'},
             {'name': '新乡化纤', 'code': '000949'},
             {'name': '吉林化纤', 'code': '000420'},
             {'name': '江南高纤', 'code': '600527'},
