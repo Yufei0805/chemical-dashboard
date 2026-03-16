@@ -3,7 +3,7 @@ name: 自动更新化工品价格数据
 on:
   schedule:
     # 工作日北京时间 19:00 更新（UTC时间 11:00，周一至周五）
-    - cron: '0 11 * * 1-5'
+    - cron: '10 11 * * 1-5'
   workflow_dispatch:  # 允许手动触发
 
 jobs:
