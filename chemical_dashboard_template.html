@@ -60,6 +60,20 @@
             margin-bottom: 30px;
         }
 
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
         .stat-card {
             background: white;
             border-radius: 12px;
@@ -144,6 +158,49 @@
             height: 60px;
         }
 
+        .related-stocks {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .stock-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px;
+            font-size: 11px;
+            background: #e6f7ff;
+            color: #1890ff;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .stock-tag:hover {
+            background: #1890ff;
+            color: white;
+        }
+
+        .stock-tag.stock-up {
+            background: #ffe6e6;
+            color: #ef4444;
+        }
+
+        .stock-tag.stock-up:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .stock-tag.stock-down {
+            background: #e6f7f0;
+            color: #10b981;
+        }
+
+        .stock-tag.stock-down:hover {
+            background: #10b981;
+            color: white;
+        }
+
         .chart-container {
             background: white;
             border-radius: 12px;
@@ -183,7 +240,13 @@
             </div>
         </div>
 
-        <div id="statsGrid" class="stats-grid"></div>
+        <div class="chart-container">
+            <div class="chart-title">价格热力图</div>
+            <div class="chart-subtitle">不同周期涨跌幅一览 | 按1日涨跌幅排序</div>
+            <div id="heatmapChart" class="chart"></div>
+        </div>
+
+        <div id="statsContainer"></div>
 
         <div class="chart-container">
             <div class="chart-title">价格走势对比（近1年）</div>
@@ -195,12 +258,6 @@
             <div class="chart-title">涨跌幅对比</div>
             <div class="chart-subtitle">相对于各周期起始价格的涨跌幅</div>
             <div id="changeChart" class="chart"></div>
-        </div>
-
-        <div class="chart-container">
-            <div class="chart-title">价格热力图</div>
-            <div class="chart-subtitle">不同周期涨跌幅一览</div>
-            <div id="heatmapChart" class="chart"></div>
         </div>
 
         <div class="chart-container" id="candlestickContainer" style="display: none;">
@@ -233,65 +290,115 @@
 
         // 渲染统计卡片
         function renderStatCards() {
-            const statsGrid = document.getElementById('statsGrid');
-            statsGrid.innerHTML = '';
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = '';
 
-            // 按当日涨跌幅排序
-            const sortedData = [...chemicalData].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
+            // 定义类别顺序
+            const categories = ['塑料树脂', '芳烃烯烃', '醇类气体', '橡胶类', '纤维纺织', '化肥无机', '能源化工', '其他'];
 
-            sortedData.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'stat-card';
-                card.onclick = () => loadDetailChart(item);
+            // 按类别分组
+            const groupedData = {};
+            categories.forEach(cat => groupedData[cat] = []);
 
-                const changeDaily = item.change_daily || 0;
-                const changeClass = changeDaily >= 0 ? 'positive' : 'negative';
-                const changeSymbol = changeDaily >= 0 ? '+' : '';
+            chemicalData.forEach(item => {
+                const category = item.category || '其他';
+                if (groupedData[category]) {
+                    groupedData[category].push(item);
+                }
+            });
 
-                const miniChartId = `mini-chart-${item.name}`;
+            // 渲染每个类别
+            categories.forEach(category => {
+                const items = groupedData[category];
+                if (items.length === 0) return;
 
-                card.innerHTML = `
-                    <div class="name">${item.name}</div>
-                    <div class="price">${item.price.toFixed(2)} <span class="unit">元/吨</span></div>
-                    <div class="change ${changeClass}">${changeSymbol}${changeDaily.toFixed(2)}% (当日)</div>
-                    <div class="periods">
-                        <div class="period-item">
-                            <div class="period-label">1周</div>
-                            <div class="period-value ${(item.change_1w || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_1w || 0) >= 0 ? '+' : ''}${(item.change_1w || 0).toFixed(1)}%
+                // 创建类别区域
+                const categorySection = document.createElement('div');
+                categorySection.className = 'category-section';
+
+                // 创建类别标题
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category;
+                categorySection.appendChild(categoryTitle);
+
+                // 创建该类别的网格
+                const statsGrid = document.createElement('div');
+                statsGrid.className = 'stats-grid';
+
+                // 按当日涨跌幅排序该类别的品种
+                const sortedItems = [...items].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
+
+                sortedItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card';
+                    card.onclick = () => loadDetailChart(item);
+
+                    const changeDaily = item.change_daily || 0;
+                    const changeClass = changeDaily >= 0 ? 'positive' : 'negative';
+                    const changeSymbol = changeDaily >= 0 ? '+' : '';
+
+                    const miniChartId = `mini-chart-${item.name}`;
+
+                    card.innerHTML = `
+                        <div class="name">${item.name}</div>
+                        <div class="price">${item.price.toFixed(2)} <span class="unit">元/吨</span></div>
+                        <div class="change ${changeClass}">${changeSymbol}${changeDaily.toFixed(2)}% (当日)</div>
+                        <div class="periods">
+                            <div class="period-item">
+                                <div class="period-label">1周</div>
+                                <div class="period-value ${(item.change_1w || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1w || 0) >= 0 ? '+' : ''}${(item.change_1w || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">1月</div>
+                                <div class="period-value ${(item.change_1m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1m || 0) >= 0 ? '+' : ''}${(item.change_1m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">3月</div>
+                                <div class="period-value ${(item.change_3m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_3m || 0) >= 0 ? '+' : ''}${(item.change_3m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">6月</div>
+                                <div class="period-value ${(item.change_6m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_6m || 0) >= 0 ? '+' : ''}${(item.change_6m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">1年</div>
+                                <div class="period-value ${(item.change_1y || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1y || 0) >= 0 ? '+' : ''}${(item.change_1y || 0).toFixed(1)}%
+                                </div>
                             </div>
                         </div>
-                        <div class="period-item">
-                            <div class="period-label">1月</div>
-                            <div class="period-value ${(item.change_1m || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_1m || 0) >= 0 ? '+' : ''}${(item.change_1m || 0).toFixed(1)}%
+                        <div class="mini-chart" id="${miniChartId}"></div>
+                        ${item.related_stocks && item.related_stocks.length > 0 ? `
+                            <div class="related-stocks">
+                                ${item.related_stocks.map(stock => {
+                                    const changeText = stock.change !== null && stock.change !== undefined ?
+                                        `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%` : '';
+                                    const changeClass = stock.change !== null && stock.change !== undefined ?
+                                        (stock.change >= 0 ? 'stock-up' : 'stock-down') : '';
+                                    return `<span class="stock-tag ${changeClass}" onclick="event.stopPropagation(); window.open('https://xueqiu.com/S/${stock.code.startsWith('6') ? 'SH' : 'SZ'}${stock.code}', '_blank')">
+                                        ${stock.name}(${stock.code})${changeText ? ' ' + changeText : ''}
+                                    </span>`;
+                                }).join('')}
                             </div>
-                        </div>
-                        <div class="period-item">
-                            <div class="period-label">3月</div>
-                            <div class="period-value ${(item.change_3m || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_3m || 0) >= 0 ? '+' : ''}${(item.change_3m || 0).toFixed(1)}%
-                            </div>
-                        </div>
-                        <div class="period-item">
-                            <div class="period-label">6月</div>
-                            <div class="period-value ${(item.change_6m || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_6m || 0) >= 0 ? '+' : ''}${(item.change_6m || 0).toFixed(1)}%
-                            </div>
-                        </div>
-                        <div class="period-item">
-                            <div class="period-label">1年</div>
-                            <div class="period-value ${(item.change_1y || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_1y || 0) >= 0 ? '+' : ''}${(item.change_1y || 0).toFixed(1)}%
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mini-chart" id="${miniChartId}"></div>
-                `;
+                        ` : ''}
+                    `;
 
-                statsGrid.appendChild(card);
+                    statsGrid.appendChild(card);
 
-                setTimeout(() => renderMiniChart(miniChartId, item.chart_data), 0);
+                    setTimeout(() => renderMiniChart(miniChartId, item.chart_data), 0);
+                });
+
+                categorySection.appendChild(statsGrid);
+                statsContainer.appendChild(categorySection);
             });
         }
 
@@ -463,11 +570,14 @@
 
         // 渲染热力图
         function renderHeatmapChart() {
-            const periods = ['1周', '1月', '3月', '6月', '1年'];
-            const keys = ['change_1w', 'change_1m', 'change_3m', 'change_6m', 'change_1y'];
+            const periods = ['1日', '1周', '1月', '3月', '6月', '1年'];
+            const keys = ['change_daily', 'change_1w', 'change_1m', 'change_3m', 'change_6m', 'change_1y'];
+
+            // 按1日涨跌幅排序（从大到小）
+            const sortedData = [...chemicalData].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
 
             const data = [];
-            chemicalData.forEach((item, i) => {
+            sortedData.forEach((item, i) => {
                 keys.forEach((key, j) => {
                     data.push([j, i, item[key] || 0]);
                 });
@@ -477,7 +587,7 @@
                 tooltip: {
                     position: 'top',
                     formatter: function(params) {
-                        return `${chemicalData[params.data[1]].name} - ${periods[params.data[0]]}<br/>涨跌幅: ${params.data[2] >= 0 ? '+' : ''}${params.data[2].toFixed(2)}%`;
+                        return `${sortedData[params.data[1]].name} - ${periods[params.data[0]]}<br/>涨跌幅: ${params.data[2] >= 0 ? '+' : ''}${params.data[2].toFixed(2)}%`;
                     }
                 },
                 grid: {
@@ -493,20 +603,21 @@
                 },
                 yAxis: {
                     type: 'category',
-                    data: chemicalData.map(d => d.name),
+                    data: sortedData.map(d => d.name),
                     splitArea: {
                         show: true
-                    }
+                    },
+                    inverse: true  // 反转Y轴，使涨幅最大的在最上面
                 },
                 visualMap: {
-                    min: -30,
+                    min: -60,
                     max: 60,
                     calculable: true,
                     orient: 'horizontal',
                     left: 'center',
                     bottom: '5%',
                     inRange: {
-                        color: ['#48bb78', '#ffffff', '#f56565']
+                        color: ['#10b981', '#ffffff', '#ef4444']  // 绿色(跌) → 白色 → 红色(涨)
                     }
                 },
                 series: [{

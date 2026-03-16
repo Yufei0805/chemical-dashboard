@@ -60,6 +60,20 @@
             margin-bottom: 30px;
         }
 
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
         .stat-card {
             background: white;
             border-radius: 12px;
@@ -144,6 +158,49 @@
             height: 60px;
         }
 
+        .related-stocks {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .stock-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px;
+            font-size: 11px;
+            background: #e6f7ff;
+            color: #1890ff;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .stock-tag:hover {
+            background: #1890ff;
+            color: white;
+        }
+
+        .stock-tag.stock-up {
+            background: #ffe6e6;
+            color: #ef4444;
+        }
+
+        .stock-tag.stock-up:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .stock-tag.stock-down {
+            background: #e6f7f0;
+            color: #10b981;
+        }
+
+        .stock-tag.stock-down:hover {
+            background: #10b981;
+            color: white;
+        }
+
         .chart-container {
             background: white;
             border-radius: 12px;
@@ -183,7 +240,13 @@
             </div>
         </div>
 
-        <div id="statsGrid" class="stats-grid"></div>
+        <div class="chart-container">
+            <div class="chart-title">价格热力图</div>
+            <div class="chart-subtitle">不同周期涨跌幅一览 | 按1日涨跌幅排序</div>
+            <div id="heatmapChart" class="chart"></div>
+        </div>
+
+        <div id="statsContainer"></div>
 
         <div class="chart-container">
             <div class="chart-title">价格走势对比（近1年）</div>
@@ -197,12 +260,6 @@
             <div id="changeChart" class="chart"></div>
         </div>
 
-        <div class="chart-container">
-            <div class="chart-title">价格热力图</div>
-            <div class="chart-subtitle">不同周期涨跌幅一览</div>
-            <div id="heatmapChart" class="chart"></div>
-        </div>
-
         <div class="chart-container" id="candlestickContainer" style="display: none;">
             <div class="chart-title" id="candlestickTitle">价格详细走势</div>
             <div class="chart-subtitle">点击化工品卡片查看详细走势 | 支持缩放和拖动</div>
@@ -214,22 +271,15 @@
         const chemicalData = [
   {
     "name": "聚乙烯",
-    "price": 8458.33,
-    "change_daily": -1.07,
-    "change_1w": 11.78,
-    "change_1m": 24.57,
-    "change_3m": 26.56,
-    "change_6m": 14.61,
-    "change_1y": 3.19,
+    "category": "塑料树脂",
+    "price": 8625.0,
+    "change_daily": 1.97,
+    "change_1w": -0.29,
+    "change_1m": 27.31,
+    "change_3m": 29.8,
+    "change_6m": 16.61,
+    "change_1y": 5.42,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 8196.67
-      },
-      {
-        "date": "20250314",
-        "price": 8181.67
-      },
       {
         "date": "20250317",
         "price": 8168.33
@@ -1189,6 +1239,10 @@
       {
         "date": "20260313",
         "price": 8458.33
+      },
+      {
+        "date": "20260316",
+        "price": 8625.0
       }
     ],
     "full_data": [
@@ -2251,28 +2305,62 @@
       {
         "date": "20260313",
         "price": 8458.33
+      },
+      {
+        "date": "20260316",
+        "price": 8625.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "中国石化",
+        "code": "600028",
+        "change": 0.0
+      },
+      {
+        "name": "中国石油",
+        "code": "601857",
+        "change": -0.5
+      },
+      {
+        "name": "恒力石化",
+        "code": "600346",
+        "change": -3.57
+      },
+      {
+        "name": "荣盛石化",
+        "code": "002493",
+        "change": -3.6
+      },
+      {
+        "name": "东方盛虹",
+        "code": "000301",
+        "change": -1.38
+      },
+      {
+        "name": "卫星化学",
+        "code": "002648",
+        "change": -4.39
+      },
+      {
+        "name": "宝丰能源",
+        "code": "600989",
+        "change": -1.64
+      }
+    ]
   },
   {
     "name": "PVC",
-    "price": 5694.0,
-    "change_daily": 0.64,
-    "change_1w": 16.18,
-    "change_1m": 21.74,
-    "change_3m": 32.57,
-    "change_6m": 22.85,
-    "change_1y": 15.87,
+    "category": "塑料树脂",
+    "price": 5875.0,
+    "change_daily": 3.18,
+    "change_1w": 6.78,
+    "change_1m": 27.27,
+    "change_3m": 36.18,
+    "change_6m": 24.89,
+    "change_1y": 19.95,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 4914.0
-      },
-      {
-        "date": "20250314",
-        "price": 4898.0
-      },
       {
         "date": "20250317",
         "price": 4900.0
@@ -3232,6 +3320,10 @@
       {
         "date": "20260313",
         "price": 5694.0
+      },
+      {
+        "date": "20260316",
+        "price": 5875.0
       }
     ],
     "full_data": [
@@ -4294,28 +4386,57 @@
       {
         "date": "20260313",
         "price": 5694.0
+      },
+      {
+        "date": "20260316",
+        "price": 5875.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "中泰化学",
+        "code": "002092",
+        "change": -3.88
+      },
+      {
+        "name": "北元集团",
+        "code": "601568",
+        "change": -4.25
+      },
+      {
+        "name": "新疆天业",
+        "code": "600075",
+        "change": -5.93
+      },
+      {
+        "name": "华塑股份",
+        "code": "600935",
+        "change": -1.85
+      },
+      {
+        "name": "天原股份",
+        "code": "002388",
+        "change": 2.32
+      },
+      {
+        "name": "英力特",
+        "code": "000635",
+        "change": 0.11
+      }
+    ]
   },
   {
     "name": "聚丙烯",
-    "price": 8660.0,
-    "change_daily": 0.0,
-    "change_1w": 10.65,
-    "change_1m": 30.42,
-    "change_3m": 38.49,
-    "change_6m": 21.86,
-    "change_1y": 14.83,
+    "category": "塑料树脂",
+    "price": 8960.0,
+    "change_daily": 3.46,
+    "change_1w": -1.83,
+    "change_1m": 34.94,
+    "change_3m": 43.28,
+    "change_6m": 25.96,
+    "change_1y": 18.81,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 7541.67
-      },
-      {
-        "date": "20250314",
-        "price": 7541.67
-      },
       {
         "date": "20250317",
         "price": 7541.67
@@ -5275,6 +5396,10 @@
       {
         "date": "20260313",
         "price": 8660.0
+      },
+      {
+        "date": "20260316",
+        "price": 8960.0
       }
     ],
     "full_data": [
@@ -6337,28 +6462,62 @@
       {
         "date": "20260313",
         "price": 8660.0
+      },
+      {
+        "date": "20260316",
+        "price": 8960.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "中国石化",
+        "code": "600028",
+        "change": 0.0
+      },
+      {
+        "name": "中国石油",
+        "code": "601857",
+        "change": -0.5
+      },
+      {
+        "name": "恒力石化",
+        "code": "600346",
+        "change": -3.57
+      },
+      {
+        "name": "荣盛石化",
+        "code": "002493",
+        "change": -3.6
+      },
+      {
+        "name": "东方盛虹",
+        "code": "000301",
+        "change": -1.38
+      },
+      {
+        "name": "宝丰能源",
+        "code": "600989",
+        "change": -1.64
+      },
+      {
+        "name": "卫星化学",
+        "code": "002648",
+        "change": -4.39
+      }
+    ]
   },
   {
     "name": "苯乙烯",
-    "price": 10400.0,
-    "change_daily": -1.33,
-    "change_1w": 16.72,
-    "change_1m": 36.7,
-    "change_3m": 53.62,
-    "change_6m": 42.08,
-    "change_1y": 24.16,
+    "category": "芳烃烯烃",
+    "price": 10320.0,
+    "change_daily": -0.77,
+    "change_1w": -10.8,
+    "change_1m": 35.9,
+    "change_3m": 52.21,
+    "change_6m": 40.71,
+    "change_1y": 23.21,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 8376.0
-      },
-      {
-        "date": "20250314",
-        "price": 8376.0
-      },
       {
         "date": "20250317",
         "price": 8386.0
@@ -7318,6 +7477,10 @@
       {
         "date": "20260313",
         "price": 10400.0
+      },
+      {
+        "date": "20260316",
+        "price": 10320.0
       }
     ],
     "full_data": [
@@ -8380,28 +8543,52 @@
       {
         "date": "20260313",
         "price": 10400.0
+      },
+      {
+        "date": "20260316",
+        "price": 10320.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "华锦股份",
+        "code": "000059",
+        "change": -1.98
+      },
+      {
+        "name": "双良节能",
+        "code": "600481",
+        "change": -4.97
+      },
+      {
+        "name": "双环科技",
+        "code": "000707",
+        "change": -2.21
+      },
+      {
+        "name": "卫星化学",
+        "code": "002648",
+        "change": -4.39
+      },
+      {
+        "name": "天原股份",
+        "code": "002388",
+        "change": 2.32
+      }
+    ]
   },
   {
     "name": "PX",
+    "category": "芳烃烯烃",
     "price": 10200.0,
-    "change_daily": 15.91,
-    "change_1w": 24.39,
+    "change_daily": 0.0,
+    "change_1w": 18.6,
     "change_1m": 33.33,
     "change_3m": 45.71,
     "change_6m": 41.67,
     "change_1y": 34.21,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 7600.0
-      },
-      {
-        "date": "20250314",
-        "price": 7600.0
-      },
       {
         "date": "20250317",
         "price": 7600.0
@@ -9364,6 +9551,10 @@
       },
       {
         "date": "20260313",
+        "price": 10200.0
+      },
+      {
+        "date": "20260316",
         "price": 10200.0
       }
     ],
@@ -10431,28 +10622,52 @@
       {
         "date": "20260313",
         "price": 10200.0
+      },
+      {
+        "date": "20260316",
+        "price": 10200.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "荣盛石化",
+        "code": "002493",
+        "change": -3.6
+      },
+      {
+        "name": "恒力石化",
+        "code": "600346",
+        "change": -3.57
+      },
+      {
+        "name": "东方盛虹",
+        "code": "000301",
+        "change": -1.38
+      },
+      {
+        "name": "中国石化",
+        "code": "600028",
+        "change": 0.0
+      },
+      {
+        "name": "上海石化",
+        "code": "600688",
+        "change": 0.61
+      }
+    ]
   },
   {
     "name": "乙二醇",
-    "price": 4873.33,
-    "change_daily": 0.0,
-    "change_1w": 20.13,
-    "change_1m": 26.69,
-    "change_3m": 25.28,
-    "change_6m": 9.1,
-    "change_1y": 5.41,
+    "category": "芳烃烯烃",
+    "price": 4886.67,
+    "change_daily": 0.27,
+    "change_1w": 8.59,
+    "change_1m": 27.31,
+    "change_3m": 25.57,
+    "change_6m": 9.61,
+    "change_1y": 5.7,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 4623.33
-      },
-      {
-        "date": "20250314",
-        "price": 4623.33
-      },
       {
         "date": "20250317",
         "price": 4613.33
@@ -11412,6 +11627,10 @@
       {
         "date": "20260313",
         "price": 4873.33
+      },
+      {
+        "date": "20260316",
+        "price": 4886.67
       }
     ],
     "full_data": [
@@ -12474,28 +12693,57 @@
       {
         "date": "20260313",
         "price": 4873.33
+      },
+      {
+        "date": "20260316",
+        "price": 4886.67
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "荣盛石化",
+        "code": "002493",
+        "change": -3.6
+      },
+      {
+        "name": "恒力石化",
+        "code": "600346",
+        "change": -3.57
+      },
+      {
+        "name": "东方盛虹",
+        "code": "000301",
+        "change": -1.38
+      },
+      {
+        "name": "卫星化学",
+        "code": "002648",
+        "change": -4.39
+      },
+      {
+        "name": "万凯新材",
+        "code": "301216",
+        "change": 4.16
+      },
+      {
+        "name": "新凤鸣",
+        "code": "603225",
+        "change": -3.02
+      }
+    ]
   },
   {
     "name": "PTA",
-    "price": 6600.6,
-    "change_daily": 7.41,
-    "change_1w": 14.51,
-    "change_1m": 26.64,
-    "change_3m": 42.27,
-    "change_6m": 42.36,
-    "change_1y": 39.01,
+    "category": "芳烃烯烃",
+    "price": 6633.86,
+    "change_daily": 0.5,
+    "change_1w": 13.26,
+    "change_1m": 28.35,
+    "change_3m": 43.51,
+    "change_6m": 42.69,
+    "change_1y": 38.28,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 4748.18
-      },
-      {
-        "date": "20250314",
-        "price": 4797.45
-      },
       {
         "date": "20250317",
         "price": 4816.91
@@ -13459,6 +13707,10 @@
       {
         "date": "20260313",
         "price": 6600.6
+      },
+      {
+        "date": "20260316",
+        "price": 6633.86
       }
     ],
     "full_data": [
@@ -14525,28 +14777,57 @@
       {
         "date": "20260313",
         "price": 6600.6
+      },
+      {
+        "date": "20260316",
+        "price": 6633.86
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "荣盛石化",
+        "code": "002493",
+        "change": -3.6
+      },
+      {
+        "name": "恒力石化",
+        "code": "600346",
+        "change": -3.57
+      },
+      {
+        "name": "东方盛虹",
+        "code": "000301",
+        "change": -1.38
+      },
+      {
+        "name": "恒逸石化",
+        "code": "000703",
+        "change": -5.39
+      },
+      {
+        "name": "新凤鸣",
+        "code": "603225",
+        "change": -3.02
+      },
+      {
+        "name": "三房巷",
+        "code": "600375",
+        "change": 0.18
+      }
+    ]
   },
   {
     "name": "甲醇",
-    "price": 2832.5,
-    "change_daily": 3.0,
-    "change_1w": 9.15,
-    "change_1m": 27.49,
-    "change_3m": 34.61,
-    "change_6m": 23.78,
-    "change_1y": 7.77,
+    "category": "醇类气体",
+    "price": 2840.83,
+    "change_daily": 0.29,
+    "change_1w": -2.88,
+    "change_1m": 29.03,
+    "change_3m": 34.42,
+    "change_6m": 24.46,
+    "change_1y": 6.93,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 2628.33
-      },
-      {
-        "date": "20250314",
-        "price": 2656.67
-      },
       {
         "date": "20250317",
         "price": 2670.0
@@ -15510,6 +15791,10 @@
       {
         "date": "20260313",
         "price": 2832.5
+      },
+      {
+        "date": "20260316",
+        "price": 2840.83
       }
     ],
     "full_data": [
@@ -16576,28 +16861,57 @@
       {
         "date": "20260313",
         "price": 2832.5
+      },
+      {
+        "date": "20260316",
+        "price": 2840.83
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "宝丰能源",
+        "code": "600989",
+        "change": -1.64
+      },
+      {
+        "name": "兖矿能源",
+        "code": "600188",
+        "change": -4.0
+      },
+      {
+        "name": "中煤能源",
+        "code": "601898",
+        "change": -3.13
+      },
+      {
+        "name": "华鲁恒升",
+        "code": "600426",
+        "change": -5.31
+      },
+      {
+        "name": "新奥股份",
+        "code": "600803",
+        "change": 0.53
+      },
+      {
+        "name": "九丰能源",
+        "code": "605090",
+        "change": -0.19
+      }
+    ]
   },
   {
     "name": "液化石油气",
-    "price": 5662.5,
-    "change_daily": -3.62,
-    "change_1w": 11.85,
-    "change_1m": 27.61,
-    "change_3m": 23.97,
-    "change_6m": 22.17,
-    "change_1y": 14.16,
+    "category": "醇类气体",
+    "price": 5475.0,
+    "change_daily": -3.31,
+    "change_1w": -19.49,
+    "change_1m": 22.76,
+    "change_3m": 20.86,
+    "change_6m": 17.43,
+    "change_1y": 10.27,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 4960.0
-      },
-      {
-        "date": "20250314",
-        "price": 4965.0
-      },
       {
         "date": "20250317",
         "price": 4965.0
@@ -17557,6 +17871,10 @@
       {
         "date": "20260313",
         "price": 5662.5
+      },
+      {
+        "date": "20260316",
+        "price": 5475.0
       }
     ],
     "full_data": [
@@ -18619,28 +18937,52 @@
       {
         "date": "20260313",
         "price": 5662.5
+      },
+      {
+        "date": "20260316",
+        "price": 5475.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "九丰能源",
+        "code": "605090",
+        "change": -0.19
+      },
+      {
+        "name": "东华能源",
+        "code": "002221",
+        "change": -0.95
+      },
+      {
+        "name": "广汇能源",
+        "code": "600256",
+        "change": -2.4
+      },
+      {
+        "name": "新奥股份",
+        "code": "600803",
+        "change": 0.53
+      },
+      {
+        "name": "卫星化学",
+        "code": "002648",
+        "change": -4.39
+      }
+    ]
   },
   {
     "name": "天然橡胶",
-    "price": 16933.33,
-    "change_daily": -0.59,
-    "change_1w": 1.7,
-    "change_1m": 2.99,
-    "change_3m": 13.14,
-    "change_6m": 13.01,
-    "change_1y": 1.7,
+    "category": "橡胶类",
+    "price": 16808.33,
+    "change_daily": -0.74,
+    "change_1w": -0.69,
+    "change_1m": 3.22,
+    "change_3m": 12.74,
+    "change_6m": 11.37,
+    "change_1y": 0.48,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 16650.0
-      },
-      {
-        "date": "20250314",
-        "price": 16728.0
-      },
       {
         "date": "20250317",
         "price": 16560.0
@@ -19604,6 +19946,10 @@
       {
         "date": "20260313",
         "price": 16933.33
+      },
+      {
+        "date": "20260316",
+        "price": 16808.33
       }
     ],
     "full_data": [
@@ -20670,28 +21016,37 @@
       {
         "date": "20260313",
         "price": 16933.33
+      },
+      {
+        "date": "20260316",
+        "price": 16808.33
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "海南橡胶",
+        "code": "601118",
+        "change": -2.16
+      },
+      {
+        "name": "中化国际",
+        "code": "600500",
+        "change": -3.25
+      }
+    ]
   },
   {
     "name": "丁二烯橡胶",
-    "price": 15810.0,
-    "change_daily": 1.22,
-    "change_1w": 10.87,
-    "change_1m": 20.96,
-    "change_3m": 45.18,
-    "change_6m": 32.19,
-    "change_1y": 14.32,
+    "category": "橡胶类",
+    "price": 15860.0,
+    "change_daily": 0.32,
+    "change_1w": 11.22,
+    "change_1m": 21.35,
+    "change_3m": 44.71,
+    "change_6m": 32.72,
+    "change_1y": 14.68,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 13830.0
-      },
-      {
-        "date": "20250314",
-        "price": 13830.0
-      },
       {
         "date": "20250317",
         "price": 13860.0
@@ -21655,6 +22010,10 @@
       {
         "date": "20260313",
         "price": 15810.0
+      },
+      {
+        "date": "20260316",
+        "price": 15860.0
       }
     ],
     "full_data": [
@@ -22721,28 +23080,47 @@
       {
         "date": "20260313",
         "price": 15810.0
+      },
+      {
+        "date": "20260316",
+        "price": 15860.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "齐翔腾达",
+        "code": "002408",
+        "change": -2.08
+      },
+      {
+        "name": "华锦股份",
+        "code": "000059",
+        "change": -1.98
+      },
+      {
+        "name": "中国石化",
+        "code": "600028",
+        "change": 0.0
+      },
+      {
+        "name": "中国石油",
+        "code": "601857",
+        "change": -0.5
+      }
+    ]
   },
   {
     "name": "短纤",
-    "price": 7787.35,
-    "change_daily": 0.54,
-    "change_1w": 8.41,
-    "change_1m": 18.39,
-    "change_3m": 24.04,
-    "change_6m": 20.6,
-    "change_1y": 11.75,
+    "category": "纤维纺织",
+    "price": 8039.52,
+    "change_daily": 3.24,
+    "change_1w": 10.79,
+    "change_1m": 22.6,
+    "change_3m": 28.21,
+    "change_6m": 24.07,
+    "change_1y": 15.37,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 6968.33
-      },
-      {
-        "date": "20250314",
-        "price": 6968.33
-      },
       {
         "date": "20250317",
         "price": 6968.33
@@ -23706,6 +24084,10 @@
       {
         "date": "20260313",
         "price": 7787.35
+      },
+      {
+        "date": "20260316",
+        "price": 8039.52
       }
     ],
     "full_data": [
@@ -24772,28 +25154,67 @@
       {
         "date": "20260313",
         "price": 7787.35
+      },
+      {
+        "date": "20260316",
+        "price": 8039.52
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "三友化工",
+        "code": "600409",
+        "change": -2.77
+      },
+      {
+        "name": "澳洋健康",
+        "code": "002172",
+        "change": -0.23
+      },
+      {
+        "name": "南京化纤",
+        "code": "600880",
+        "change": 1.17
+      },
+      {
+        "name": "新乡化纤",
+        "code": "000949",
+        "change": 0.13
+      },
+      {
+        "name": "吉林化纤",
+        "code": "000420",
+        "change": 5.81
+      },
+      {
+        "name": "江南高纤",
+        "code": "600527",
+        "change": 0.0
+      },
+      {
+        "name": "新凤鸣",
+        "code": "603225",
+        "change": -3.02
+      },
+      {
+        "name": "恒逸石化",
+        "code": "000703",
+        "change": -5.39
+      }
+    ]
   },
   {
     "name": "纸浆",
+    "category": "纤维纺织",
     "price": 5316.67,
     "change_daily": 0.0,
-    "change_1w": -0.62,
+    "change_1w": -2.45,
     "change_1m": -0.62,
     "change_3m": -4.78,
     "change_6m": -7.0,
-    "change_1y": -19.27,
+    "change_1y": -19.44,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 6586.0
-      },
-      {
-        "date": "20250314",
-        "price": 6600.0
-      },
       {
         "date": "20250317",
         "price": 6600.0
@@ -25756,6 +26177,10 @@
       },
       {
         "date": "20260313",
+        "price": 5316.67
+      },
+      {
+        "date": "20260316",
         "price": 5316.67
       }
     ],
@@ -26823,28 +27248,42 @@
       {
         "date": "20260313",
         "price": 5316.67
+      },
+      {
+        "date": "20260316",
+        "price": 5316.67
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "太阳纸业",
+        "code": "002078",
+        "change": 1.1
+      },
+      {
+        "name": "晨鸣纸业",
+        "code": "000488",
+        "change": 5.07
+      },
+      {
+        "name": "山鹰国际",
+        "code": "600567",
+        "change": -1.74
+      }
+    ]
   },
   {
     "name": "尿素",
+    "category": "化肥无机",
     "price": 1892.5,
-    "change_daily": 0.13,
+    "change_daily": 0.0,
     "change_1w": 2.23,
-    "change_1m": 5.87,
+    "change_1m": 5.43,
     "change_3m": 10.35,
-    "change_6m": 13.07,
-    "change_1y": 1.26,
+    "change_6m": 13.15,
+    "change_1y": 1.04,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 1869.0
-      },
-      {
-        "date": "20250314",
-        "price": 1873.0
-      },
       {
         "date": "20250317",
         "price": 1877.0
@@ -27807,6 +28246,10 @@
       },
       {
         "date": "20260313",
+        "price": 1892.5
+      },
+      {
+        "date": "20260316",
         "price": 1892.5
       }
     ],
@@ -28874,28 +29317,52 @@
       {
         "date": "20260313",
         "price": 1892.5
+      },
+      {
+        "date": "20260316",
+        "price": 1892.5
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "华鲁恒升",
+        "code": "600426",
+        "change": -5.31
+      },
+      {
+        "name": "云天化",
+        "code": "600096",
+        "change": -5.66
+      },
+      {
+        "name": "湖北宜化",
+        "code": "000422",
+        "change": -4.75
+      },
+      {
+        "name": "中煤能源",
+        "code": "601898",
+        "change": -3.13
+      },
+      {
+        "name": "四川美丰",
+        "code": "000735",
+        "change": 0.92
+      }
+    ]
   },
   {
     "name": "纯碱",
+    "category": "化肥无机",
     "price": 1250.71,
-    "change_daily": 0.92,
-    "change_1w": 3.12,
+    "change_daily": 0.0,
+    "change_1w": 1.68,
     "change_1m": 4.1,
     "change_3m": 2.28,
     "change_6m": -0.93,
     "change_1y": -19.72,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 1558.0
-      },
-      {
-        "date": "20250314",
-        "price": 1558.0
-      },
       {
         "date": "20250317",
         "price": 1558.0
@@ -29858,6 +30325,10 @@
       },
       {
         "date": "20260313",
+        "price": 1250.71
+      },
+      {
+        "date": "20260316",
         "price": 1250.71
       }
     ],
@@ -30925,28 +31396,52 @@
       {
         "date": "20260313",
         "price": 1250.71
+      },
+      {
+        "date": "20260316",
+        "price": 1250.71
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "博源化工",
+        "code": "000683",
+        "change": -3.65
+      },
+      {
+        "name": "山东海化",
+        "code": "000822",
+        "change": -3.24
+      },
+      {
+        "name": "三友化工",
+        "code": "600409",
+        "change": -2.77
+      },
+      {
+        "name": "金晶科技",
+        "code": "600586",
+        "change": -2.88
+      },
+      {
+        "name": "双环科技",
+        "code": "000707",
+        "change": -2.21
+      }
+    ]
   },
   {
     "name": "燃料油",
-    "price": 6500.0,
-    "change_daily": 0.0,
-    "change_1w": 5.91,
-    "change_1m": 20.93,
-    "change_3m": 21.67,
-    "change_6m": 20.09,
-    "change_1y": 17.2,
+    "category": "能源化工",
+    "price": 6537.5,
+    "change_daily": 0.58,
+    "change_1w": 4.39,
+    "change_1m": 21.63,
+    "change_3m": 21.63,
+    "change_6m": 20.51,
+    "change_1y": 17.45,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 5546.0
-      },
-      {
-        "date": "20250314",
-        "price": 5566.0
-      },
       {
         "date": "20250317",
         "price": 5572.0
@@ -31910,6 +32405,10 @@
       {
         "date": "20260313",
         "price": 6500.0
+      },
+      {
+        "date": "20260316",
+        "price": 6537.5
       }
     ],
     "full_data": [
@@ -32976,28 +33475,57 @@
       {
         "date": "20260313",
         "price": 6500.0
+      },
+      {
+        "date": "20260316",
+        "price": 6537.5
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "中国石化",
+        "code": "600028",
+        "change": 0.0
+      },
+      {
+        "name": "中国石油",
+        "code": "601857",
+        "change": -0.5
+      },
+      {
+        "name": "上海石化",
+        "code": "600688",
+        "change": 0.61
+      },
+      {
+        "name": "博汇股份",
+        "code": "300839",
+        "change": -0.73
+      },
+      {
+        "name": "龙宇燃油",
+        "code": "603003",
+        "change": -3.17
+      },
+      {
+        "name": "荣盛石化",
+        "code": "002493",
+        "change": -3.6
+      }
+    ]
   },
   {
     "name": "沥青",
-    "price": 3883.33,
-    "change_daily": 0.0,
-    "change_1w": 8.47,
-    "change_1m": 20.98,
-    "change_3m": 31.34,
-    "change_6m": 6.83,
-    "change_1y": 5.84,
+    "category": "能源化工",
+    "price": 4093.33,
+    "change_daily": 5.41,
+    "change_1w": -0.16,
+    "change_1m": 27.52,
+    "change_3m": 38.91,
+    "change_6m": 12.76,
+    "change_1y": 11.56,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 3669.2
-      },
-      {
-        "date": "20250314",
-        "price": 3669.2
-      },
       {
         "date": "20250317",
         "price": 3651.2
@@ -33961,6 +34489,10 @@
       {
         "date": "20260313",
         "price": 3883.33
+      },
+      {
+        "date": "20260316",
+        "price": 4093.33
       }
     ],
     "full_data": [
@@ -35027,28 +35559,52 @@
       {
         "date": "20260313",
         "price": 3883.33
+      },
+      {
+        "date": "20260316",
+        "price": 4093.33
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "宝利国际",
+        "code": "300135",
+        "change": 1.98
+      },
+      {
+        "name": "国创高新",
+        "code": "002377",
+        "change": 1.95
+      },
+      {
+        "name": "中国石化",
+        "code": "600028",
+        "change": 0.0
+      },
+      {
+        "name": "中国石油",
+        "code": "601857",
+        "change": -0.5
+      },
+      {
+        "name": "华锦股份",
+        "code": "000059",
+        "change": -1.98
+      }
+    ]
   },
   {
     "name": "不锈钢",
-    "price": 14433.33,
-    "change_daily": 0.0,
-    "change_1w": -0.09,
-    "change_1m": 2.36,
-    "change_3m": 14.1,
-    "change_6m": 10.45,
-    "change_1y": 6.91,
+    "category": "其他",
+    "price": 14366.67,
+    "change_daily": -0.46,
+    "change_1w": -0.55,
+    "change_1m": 1.89,
+    "change_3m": 13.57,
+    "change_6m": 9.73,
+    "change_1y": 5.64,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 13500.0
-      },
-      {
-        "date": "20250314",
-        "price": 13600.0
-      },
       {
         "date": "20250317",
         "price": 13675.0
@@ -36012,6 +36568,10 @@
       {
         "date": "20260313",
         "price": 14433.33
+      },
+      {
+        "date": "20260316",
+        "price": 14366.67
       }
     ],
     "full_data": [
@@ -37078,28 +37638,47 @@
       {
         "date": "20260313",
         "price": 14433.33
+      },
+      {
+        "date": "20260316",
+        "price": 14366.67
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "太钢不锈",
+        "code": "000825",
+        "change": -3.63
+      },
+      {
+        "name": "甬金股份",
+        "code": "603995",
+        "change": -2.59
+      },
+      {
+        "name": "永兴材料",
+        "code": "002756",
+        "change": -3.18
+      },
+      {
+        "name": "酒钢宏兴",
+        "code": "600307",
+        "change": -9.91
+      }
+    ]
   },
   {
     "name": "玻璃",
+    "category": "其他",
     "price": 1088.0,
-    "change_daily": 0.15,
-    "change_1w": 1.64,
+    "change_daily": 0.0,
+    "change_1w": 0.89,
     "change_1m": 2.64,
-    "change_3m": 1.27,
-    "change_6m": -3.75,
-    "change_1y": -9.75,
+    "change_3m": 1.49,
+    "change_6m": -4.9,
+    "change_1y": -8.85,
     "chart_data": [
-      {
-        "date": "20250313",
-        "price": 1205.6
-      },
-      {
-        "date": "20250314",
-        "price": 1193.6
-      },
       {
         "date": "20250317",
         "price": 1201.6
@@ -38062,6 +38641,10 @@
       },
       {
         "date": "20260313",
+        "price": 1088.0
+      },
+      {
+        "date": "20260316",
         "price": 1088.0
       }
     ],
@@ -39129,12 +39712,43 @@
       {
         "date": "20260313",
         "price": 1088.0
+      },
+      {
+        "date": "20260316",
+        "price": 1088.0
       }
     ],
-    "update_time": "20260313"
+    "update_time": "20260316",
+    "related_stocks": [
+      {
+        "name": "旗滨集团",
+        "code": "601636",
+        "change": -2.5
+      },
+      {
+        "name": "福莱特",
+        "code": "601865",
+        "change": -1.85
+      },
+      {
+        "name": "南玻A",
+        "code": "000012",
+        "change": -1.03
+      },
+      {
+        "name": "福耀玻璃",
+        "code": "600660",
+        "change": -0.94
+      },
+      {
+        "name": "金晶科技",
+        "code": "600586",
+        "change": -2.88
+      }
+    ]
   }
 ];
-        const updateTime = "2026-03-15 19:56:41";
+        const updateTime = "2026-03-16 20:20:26";
 
         let priceChart, changeChart, heatmapChart, candlestickChart;
 
@@ -39155,65 +39769,115 @@
 
         // 渲染统计卡片
         function renderStatCards() {
-            const statsGrid = document.getElementById('statsGrid');
-            statsGrid.innerHTML = '';
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = '';
 
-            // 按当日涨跌幅排序
-            const sortedData = [...chemicalData].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
+            // 定义类别顺序
+            const categories = ['塑料树脂', '芳烃烯烃', '醇类气体', '橡胶类', '纤维纺织', '化肥无机', '能源化工', '其他'];
 
-            sortedData.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'stat-card';
-                card.onclick = () => loadDetailChart(item);
+            // 按类别分组
+            const groupedData = {};
+            categories.forEach(cat => groupedData[cat] = []);
 
-                const changeDaily = item.change_daily || 0;
-                const changeClass = changeDaily >= 0 ? 'positive' : 'negative';
-                const changeSymbol = changeDaily >= 0 ? '+' : '';
+            chemicalData.forEach(item => {
+                const category = item.category || '其他';
+                if (groupedData[category]) {
+                    groupedData[category].push(item);
+                }
+            });
 
-                const miniChartId = `mini-chart-${item.name}`;
+            // 渲染每个类别
+            categories.forEach(category => {
+                const items = groupedData[category];
+                if (items.length === 0) return;
 
-                card.innerHTML = `
-                    <div class="name">${item.name}</div>
-                    <div class="price">${item.price.toFixed(2)} <span class="unit">元/吨</span></div>
-                    <div class="change ${changeClass}">${changeSymbol}${changeDaily.toFixed(2)}% (当日)</div>
-                    <div class="periods">
-                        <div class="period-item">
-                            <div class="period-label">1周</div>
-                            <div class="period-value ${(item.change_1w || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_1w || 0) >= 0 ? '+' : ''}${(item.change_1w || 0).toFixed(1)}%
+                // 创建类别区域
+                const categorySection = document.createElement('div');
+                categorySection.className = 'category-section';
+
+                // 创建类别标题
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category;
+                categorySection.appendChild(categoryTitle);
+
+                // 创建该类别的网格
+                const statsGrid = document.createElement('div');
+                statsGrid.className = 'stats-grid';
+
+                // 按当日涨跌幅排序该类别的品种
+                const sortedItems = [...items].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
+
+                sortedItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card';
+                    card.onclick = () => loadDetailChart(item);
+
+                    const changeDaily = item.change_daily || 0;
+                    const changeClass = changeDaily >= 0 ? 'positive' : 'negative';
+                    const changeSymbol = changeDaily >= 0 ? '+' : '';
+
+                    const miniChartId = `mini-chart-${item.name}`;
+
+                    card.innerHTML = `
+                        <div class="name">${item.name}</div>
+                        <div class="price">${item.price.toFixed(2)} <span class="unit">元/吨</span></div>
+                        <div class="change ${changeClass}">${changeSymbol}${changeDaily.toFixed(2)}% (当日)</div>
+                        <div class="periods">
+                            <div class="period-item">
+                                <div class="period-label">1周</div>
+                                <div class="period-value ${(item.change_1w || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1w || 0) >= 0 ? '+' : ''}${(item.change_1w || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">1月</div>
+                                <div class="period-value ${(item.change_1m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1m || 0) >= 0 ? '+' : ''}${(item.change_1m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">3月</div>
+                                <div class="period-value ${(item.change_3m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_3m || 0) >= 0 ? '+' : ''}${(item.change_3m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">6月</div>
+                                <div class="period-value ${(item.change_6m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_6m || 0) >= 0 ? '+' : ''}${(item.change_6m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">1年</div>
+                                <div class="period-value ${(item.change_1y || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1y || 0) >= 0 ? '+' : ''}${(item.change_1y || 0).toFixed(1)}%
+                                </div>
                             </div>
                         </div>
-                        <div class="period-item">
-                            <div class="period-label">1月</div>
-                            <div class="period-value ${(item.change_1m || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_1m || 0) >= 0 ? '+' : ''}${(item.change_1m || 0).toFixed(1)}%
+                        <div class="mini-chart" id="${miniChartId}"></div>
+                        ${item.related_stocks && item.related_stocks.length > 0 ? `
+                            <div class="related-stocks">
+                                ${item.related_stocks.map(stock => {
+                                    const changeText = stock.change !== null && stock.change !== undefined ?
+                                        `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%` : '';
+                                    const changeClass = stock.change !== null && stock.change !== undefined ?
+                                        (stock.change >= 0 ? 'stock-up' : 'stock-down') : '';
+                                    return `<span class="stock-tag ${changeClass}" onclick="event.stopPropagation(); window.open('https://xueqiu.com/S/${stock.code.startsWith('6') ? 'SH' : 'SZ'}${stock.code}', '_blank')">
+                                        ${stock.name}(${stock.code})${changeText ? ' ' + changeText : ''}
+                                    </span>`;
+                                }).join('')}
                             </div>
-                        </div>
-                        <div class="period-item">
-                            <div class="period-label">3月</div>
-                            <div class="period-value ${(item.change_3m || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_3m || 0) >= 0 ? '+' : ''}${(item.change_3m || 0).toFixed(1)}%
-                            </div>
-                        </div>
-                        <div class="period-item">
-                            <div class="period-label">6月</div>
-                            <div class="period-value ${(item.change_6m || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_6m || 0) >= 0 ? '+' : ''}${(item.change_6m || 0).toFixed(1)}%
-                            </div>
-                        </div>
-                        <div class="period-item">
-                            <div class="period-label">1年</div>
-                            <div class="period-value ${(item.change_1y || 0) >= 0 ? 'positive' : 'negative'}">
-                                ${(item.change_1y || 0) >= 0 ? '+' : ''}${(item.change_1y || 0).toFixed(1)}%
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mini-chart" id="${miniChartId}"></div>
-                `;
+                        ` : ''}
+                    `;
 
-                statsGrid.appendChild(card);
+                    statsGrid.appendChild(card);
 
-                setTimeout(() => renderMiniChart(miniChartId, item.chart_data), 0);
+                    setTimeout(() => renderMiniChart(miniChartId, item.chart_data), 0);
+                });
+
+                categorySection.appendChild(statsGrid);
+                statsContainer.appendChild(categorySection);
             });
         }
 
@@ -39385,11 +40049,14 @@
 
         // 渲染热力图
         function renderHeatmapChart() {
-            const periods = ['1周', '1月', '3月', '6月', '1年'];
-            const keys = ['change_1w', 'change_1m', 'change_3m', 'change_6m', 'change_1y'];
+            const periods = ['1日', '1周', '1月', '3月', '6月', '1年'];
+            const keys = ['change_daily', 'change_1w', 'change_1m', 'change_3m', 'change_6m', 'change_1y'];
+
+            // 按1日涨跌幅排序（从大到小）
+            const sortedData = [...chemicalData].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
 
             const data = [];
-            chemicalData.forEach((item, i) => {
+            sortedData.forEach((item, i) => {
                 keys.forEach((key, j) => {
                     data.push([j, i, item[key] || 0]);
                 });
@@ -39399,7 +40066,7 @@
                 tooltip: {
                     position: 'top',
                     formatter: function(params) {
-                        return `${chemicalData[params.data[1]].name} - ${periods[params.data[0]]}<br/>涨跌幅: ${params.data[2] >= 0 ? '+' : ''}${params.data[2].toFixed(2)}%`;
+                        return `${sortedData[params.data[1]].name} - ${periods[params.data[0]]}<br/>涨跌幅: ${params.data[2] >= 0 ? '+' : ''}${params.data[2].toFixed(2)}%`;
                     }
                 },
                 grid: {
@@ -39415,20 +40082,21 @@
                 },
                 yAxis: {
                     type: 'category',
-                    data: chemicalData.map(d => d.name),
+                    data: sortedData.map(d => d.name),
                     splitArea: {
                         show: true
-                    }
+                    },
+                    inverse: true  // 反转Y轴，使涨幅最大的在最上面
                 },
                 visualMap: {
-                    min: -30,
+                    min: -60,
                     max: 60,
                     calculable: true,
                     orient: 'horizontal',
                     left: 'center',
                     bottom: '5%',
                     inRange: {
-                        color: ['#48bb78', '#ffffff', '#f56565']
+                        color: ['#10b981', '#ffffff', '#ef4444']  // 绿色(跌) → 白色 → 红色(涨)
                     }
                 },
                 series: [{
