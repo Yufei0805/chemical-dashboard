@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国内化工品现货价格看板</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .update-time {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .header .data-info {
+            font-size: 12px;
+            opacity: 0.85;
+            margin-top: 5px;
+        }
+
+        .header .data-info a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+
+        .stat-card .name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .stat-card .price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .unit {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .stat-card .change {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .stat-card .change.positive {
+            color: #f56565;
+        }
+
+        .stat-card .change.negative {
+            color: #48bb78;
+        }
+
+        .stat-card .periods {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .stat-card .period-item {
+            text-align: center;
+        }
+
+        .stat-card .period-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 3px;
+        }
+
+        .stat-card .period-value {
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .stat-card .period-value.positive {
+            color: #f56565;
+        }
+
+        .stat-card .period-value.negative {
+            color: #48bb78;
+        }
+
+        .stat-card .mini-chart {
+            margin-top: 15px;
+            height: 60px;
+        }
+
+        .related-stocks {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .stock-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px;
+            font-size: 11px;
+            background: #e6f7ff;
+            color: #1890ff;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .stock-tag:hover {
+            background: #1890ff;
+            color: white;
+        }
+
+        .stock-tag.stock-up {
+            background: #ffe6e6;
+            color: #ef4444;
+        }
+
+        .stock-tag.stock-up:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .stock-tag.stock-down {
+            background: #e6f7f0;
+            color: #10b981;
+        }
+
+        .stock-tag.stock-down:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .chart-subtitle {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .chart {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 国内化工品现货价格看板</h1>
+            <div class="update-time">数据更新时间: <span id="updateTime">加载中...</span></div>
+            <div class="data-info">
+                数据来源: <a href="https://www.100ppi.com/" target="_blank">生意社</a> |
+                数据提供: 同花顺iFinD经济数据库 |
+                更新频率: 每日更新
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">价格热力图</div>
+            <div class="chart-subtitle">不同周期涨跌幅一览 | 按1日涨跌幅排序</div>
+            <div id="heatmapChart" class="chart"></div>
+        </div>
+
+        <div id="statsContainer"></div>
+
+        <div class="chart-container">
+            <div class="chart-title">价格走势对比（近1年）</div>
+            <div class="chart-subtitle">数据来源: 生意社 | 单位: 元/吨 | 注: 仅显示交易日数据</div>
+            <div id="priceChart" class="chart"></div>
+        </div>
+
+        <div class="chart-container">
+            <div class="chart-title">涨跌幅对比</div>
+            <div class="chart-subtitle">相对于各周期起始价格的涨跌幅</div>
+            <div id="changeChart" class="chart"></div>
+        </div>
+
+        <div class="chart-container" id="candlestickContainer" style="display: none;">
+            <div class="chart-title" id="candlestickTitle">价格详细走势</div>
+            <div class="chart-subtitle">点击化工品卡片查看详细走势 | 支持缩放和拖动</div>
+            <div id="candlestickChart" class="chart"></div>
+        </div>
+    </div>
+
+    <script>
+        /* DATA_PLACEHOLDER */
+        /* UPDATE_TIME_PLACEHOLDER */
+
+        let priceChart, changeChart, heatmapChart, candlestickChart;
+
+        // 初始化图表
+        function initCharts() {
+            priceChart = echarts.init(document.getElementById('priceChart'));
+            changeChart = echarts.init(document.getElementById('changeChart'));
+            heatmapChart = echarts.init(document.getElementById('heatmapChart'));
+            candlestickChart = echarts.init(document.getElementById('candlestickChart'));
+
+            window.addEventListener('resize', () => {
+                priceChart.resize();
+                changeChart.resize();
+                heatmapChart.resize();
+                candlestickChart.resize();
+            });
+        }
+
+        // 渲染统计卡片
+        function renderStatCards() {
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = '';
+
+            // 定义类别顺序
+            const categories = ['塑料树脂', '芳烃烯烃', '醇类气体', '橡胶类', '纤维纺织', '化肥无机', '能源化工', '其他'];
+
+            // 按类别分组
+            const groupedData = {};
+            categories.forEach(cat => groupedData[cat] = []);
+
+            chemicalData.forEach(item => {
+                const category = item.category || '其他';
+                if (groupedData[category]) {
+                    groupedData[category].push(item);
+                }
+            });
+
+            // 渲染每个类别
+            categories.forEach(category => {
+                const items = groupedData[category];
+                if (items.length === 0) return;
+
+                // 创建类别区域
+                const categorySection = document.createElement('div');
+                categorySection.className = 'category-section';
+
+                // 创建类别标题
+                const categoryTitle = document.createElement('h3');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = category;
+                categorySection.appendChild(categoryTitle);
+
+                // 创建该类别的网格
+                const statsGrid = document.createElement('div');
+                statsGrid.className = 'stats-grid';
+
+                // 按当日涨跌幅排序该类别的品种
+                const sortedItems = [...items].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
+
+                sortedItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'stat-card';
+                    card.onclick = () => loadDetailChart(item);
+
+                    const changeDaily = item.change_daily || 0;
+                    const changeClass = changeDaily >= 0 ? 'positive' : 'negative';
+                    const changeSymbol = changeDaily >= 0 ? '+' : '';
+
+                    const miniChartId = `mini-chart-${item.name}`;
+
+                    card.innerHTML = `
+                        <div class="name">${item.name}</div>
+                        <div class="price">${item.price.toFixed(2)} <span class="unit">元/吨</span></div>
+                        <div class="change ${changeClass}">${changeSymbol}${changeDaily.toFixed(2)}% (当日)</div>
+                        <div class="periods">
+                            <div class="period-item">
+                                <div class="period-label">1周</div>
+                                <div class="period-value ${(item.change_1w || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1w || 0) >= 0 ? '+' : ''}${(item.change_1w || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">1月</div>
+                                <div class="period-value ${(item.change_1m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1m || 0) >= 0 ? '+' : ''}${(item.change_1m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">3月</div>
+                                <div class="period-value ${(item.change_3m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_3m || 0) >= 0 ? '+' : ''}${(item.change_3m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">6月</div>
+                                <div class="period-value ${(item.change_6m || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_6m || 0) >= 0 ? '+' : ''}${(item.change_6m || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                            <div class="period-item">
+                                <div class="period-label">1年</div>
+                                <div class="period-value ${(item.change_1y || 0) >= 0 ? 'positive' : 'negative'}">
+                                    ${(item.change_1y || 0) >= 0 ? '+' : ''}${(item.change_1y || 0).toFixed(1)}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mini-chart" id="${miniChartId}"></div>
+                        ${item.related_stocks && item.related_stocks.length > 0 ? `
+                            <div class="related-stocks">
+                                ${item.related_stocks.map(stock => {
+                                    const changeText = stock.change !== null && stock.change !== undefined ?
+                                        `${stock.change >= 0 ? '+' : ''}${stock.change.toFixed(2)}%` : '';
+                                    const changeClass = stock.change !== null && stock.change !== undefined ?
+                                        (stock.change >= 0 ? 'stock-up' : 'stock-down') : '';
+                                    return `<span class="stock-tag ${changeClass}" onclick="event.stopPropagation(); window.open('https://xueqiu.com/S/${stock.code.startsWith('6') ? 'SH' : 'SZ'}${stock.code}', '_blank')">
+                                        ${stock.name}(${stock.code})${changeText ? ' ' + changeText : ''}
+                                    </span>`;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                    `;
+
+                    statsGrid.appendChild(card);
+
+                    setTimeout(() => renderMiniChart(miniChartId, item.chart_data), 0);
+                });
+
+                categorySection.appendChild(statsGrid);
+                statsContainer.appendChild(categorySection);
+            });
+        }
+
+        // 渲染迷你图表
+        function renderMiniChart(elementId, data) {
+            const chart = echarts.init(document.getElementById(elementId));
+
+            const option = {
+                grid: {
+                    left: 0,
+                    right: 0,
+                    top: 5,
+                    bottom: 5
+                },
+                xAxis: {
+                    type: 'category',
+                    show: false,
+                    data: data.map(d => d.date)
+                },
+                yAxis: {
+                    type: 'value',
+                    show: false
+                },
+                series: [{
+                    type: 'line',
+                    data: data.map(d => d.price),
+                    smooth: true,
+                    symbol: 'none',
+                    lineStyle: {
+                        width: 1.5,
+                        color: '#667eea'
+                    },
+                    areaStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: 'rgba(102, 126, 234, 0.3)'
+                            }, {
+                                offset: 1,
+                                color: 'rgba(102, 126, 234, 0.05)'
+                            }]
+                        }
+                    }
+                }]
+            };
+
+            chart.setOption(option);
+        }
+
+        // 渲染价格走势图
+        function renderPriceChart() {
+            // 收集所有日期（合并所有化工品的日期）
+            const allDates = new Set();
+            chemicalData.forEach(item => {
+                item.chart_data.forEach(d => allDates.add(d.date));
+            });
+            const sortedDates = Array.from(allDates).sort();
+
+            // 过滤掉周末（只保留有至少一个化工品有数据的日期）
+            const validDates = sortedDates.filter(date => {
+                // 检查这个日期是否至少有一个化工品有数据
+                return chemicalData.some(item => {
+                    return item.chart_data.some(d => d.date === date);
+                });
+            });
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                legend: {
+                    data: chemicalData.map(d => d.name),
+                    top: 10,
+                    type: 'scroll'
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: validDates
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '价格 (元/吨)'
+                },
+                series: chemicalData.map(item => {
+                    // 创建日期到价格的映射
+                    const priceMap = {};
+                    item.chart_data.forEach(d => {
+                        priceMap[d.date] = d.price;
+                    });
+
+                    // 对于每个有效日期，如果有数据就填入，没有就填null
+                    const data = validDates.map(date => priceMap[date] || null);
+
+                    return {
+                        name: item.name,
+                        type: 'line',
+                        data: data,
+                        connectNulls: true,  // 连接空值，让线条连续
+                        smooth: false,
+                        symbol: 'circle',
+                        symbolSize: 2,
+                        emphasis: {
+                            focus: 'series'
+                        }
+                    };
+                })
+            };
+
+            priceChart.setOption(option);
+        }
+
+        // 渲染涨跌幅对比图
+        function renderChangeChart() {
+            const periods = ['1周', '1月', '3月', '6月', '1年'];
+            const keys = ['change_1w', 'change_1m', 'change_3m', 'change_6m', 'change_1y'];
+
+            const option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: periods,
+                    top: 10
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: chemicalData.map(d => d.name)
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '涨跌幅 (%)',
+                    axisLabel: {
+                        formatter: '{value}%'
+                    }
+                },
+                series: periods.map((period, idx) => ({
+                    name: period,
+                    type: 'bar',
+                    data: chemicalData.map(item => item[keys[idx]] || 0)
+                }))
+            };
+
+            changeChart.setOption(option);
+        }
+
+        // 渲染热力图
+        function renderHeatmapChart() {
+            const periods = ['1日', '1周', '1月', '3月', '6月', '1年'];
+            const keys = ['change_daily', 'change_1w', 'change_1m', 'change_3m', 'change_6m', 'change_1y'];
+
+            // 按1日涨跌幅排序（从大到小）
+            const sortedData = [...chemicalData].sort((a, b) => (b.change_daily || 0) - (a.change_daily || 0));
+
+            const data = [];
+            sortedData.forEach((item, i) => {
+                keys.forEach((key, j) => {
+                    data.push([j, i, item[key] || 0]);
+                });
+            });
+
+            const option = {
+                tooltip: {
+                    position: 'top',
+                    formatter: function(params) {
+                        return `${sortedData[params.data[1]].name} - ${periods[params.data[0]]}<br/>涨跌幅: ${params.data[2] >= 0 ? '+' : ''}${params.data[2].toFixed(2)}%`;
+                    }
+                },
+                grid: {
+                    height: '70%',
+                    top: '10%'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: periods,
+                    splitArea: {
+                        show: true
+                    }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: sortedData.map(d => d.name),
+                    splitArea: {
+                        show: true
+                    },
+                    inverse: true  // 反转Y轴，使涨幅最大的在最上面
+                },
+                visualMap: {
+                    min: -60,
+                    max: 60,
+                    calculable: true,
+                    orient: 'horizontal',
+                    left: 'center',
+                    bottom: '5%',
+                    inRange: {
+                        color: ['#10b981', '#ffffff', '#ef4444']  // 绿色(跌) → 白色 → 红色(涨)
+                    }
+                },
+                series: [{
+                    name: '涨跌幅',
+                    type: 'heatmap',
+                    data: data,
+                    label: {
+                        show: true,
+                        formatter: function(params) {
+                            return (params.data[2] >= 0 ? '+' : '') + params.data[2].toFixed(1) + '%';
+                        }
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }]
+            };
+
+            heatmapChart.setOption(option);
+        }
+
+        // 加载详细K线图
+        function loadDetailChart(item) {
+            // 显示图表容器
+            document.getElementById('candlestickContainer').style.display = 'block';
+            document.getElementById('candlestickTitle').textContent = `${item.name} - 价格详细走势`;
+
+            // 滚动到图表位置
+            document.getElementById('candlestickContainer').scrollIntoView({ behavior: 'smooth' });
+
+            renderCandlestickChart(item);
+        }
+
+        // 渲染K线图（改为折线图）
+        function renderCandlestickChart(data) {
+            const chartData = data.full_data;
+
+            const option = {
+                title: {
+                    text: `${data.name} 价格走势`,
+                    left: 'center'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    },
+                    formatter: function(params) {
+                        if (params && params.length > 0) {
+                            return `${params[0].name}<br/>价格: ${params[0].data} 元/吨`;
+                        }
+                        return '';
+                    }
+                },
+                grid: {
+                    left: '50',
+                    right: '50',
+                    bottom: '80',
+                    top: '80',
+                    containLabel: false
+                },
+                xAxis: {
+                    type: 'category',
+                    data: chartData.map(d => d.date),
+                    boundaryGap: false,
+                    axisLabel: {
+                        rotate: 45,
+                        interval: Math.floor(chartData.length / 15)
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '价格 (元/吨)',
+                    scale: true,
+                    splitArea: {
+                        show: true
+                    }
+                },
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        start: 0,
+                        end: 100,
+                        xAxisIndex: [0]
+                    },
+                    {
+                        show: true,
+                        type: 'slider',
+                        bottom: 10,
+                        start: 0,
+                        end: 100,
+                        xAxisIndex: [0],
+                        height: 20
+                    }
+                ],
+                series: [
+                    {
+                        name: '价格',
+                        type: 'line',
+                        data: chartData.map(d => d.price),
+                        smooth: false,
+                        symbol: 'circle',
+                        symbolSize: 3,
+                        lineStyle: {
+                            width: 2,
+                            color: '#667eea'
+                        },
+                        itemStyle: {
+                            color: '#667eea'
+                        },
+                        areaStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0,
+                                y: 0,
+                                x2: 0,
+                                y2: 1,
+                                colorStops: [{
+                                    offset: 0,
+                                    color: 'rgba(102, 126, 234, 0.3)'
+                                }, {
+                                    offset: 1,
+                                    color: 'rgba(102, 126, 234, 0.05)'
+                                }]
+                            }
+                        }
+                    }
+                ]
+            };
+
+            candlestickChart.setOption(option, true);
+
+            // 强制重新调整大小
+            setTimeout(() => {
+                candlestickChart.resize();
+            }, 100);
+        }
+
+        // 初始化
+        document.getElementById('updateTime').textContent = updateTime;
+        initCharts();
+        renderStatCards();
+        renderPriceChart();
+        renderChangeChart();
+        renderHeatmapChart();
+    </script>
+</body>
+</html>
