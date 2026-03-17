@@ -9,7 +9,9 @@
 
 import akshare as ak
 import json
+import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 import pandas as pd
 import baostock as bs
 import chinese_calendar as cc
@@ -17,10 +19,99 @@ import chinese_calendar as cc
 # 设置北京时区
 BEIJING_TZ = timezone(timedelta(hours=8))
 
+# 数据存储目录
+DATA_DIR = Path(__file__).parent / 'data'
+HISTORICAL_DATA_FILE = DATA_DIR / 'chemical_prices.json'
+LAST_UPDATE_FILE = DATA_DIR / 'last_update.txt'
+
 def is_workday():
     """检查今天是否是工作日（排除周末和中国法定节假日）"""
     today = datetime.now(BEIJING_TZ).date()
     return cc.is_workday(today)
+
+def load_historical_data():
+    """从JSON文件加载历史数据"""
+    if not HISTORICAL_DATA_FILE.exists():
+        return None
+
+    try:
+        with open(HISTORICAL_DATA_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        print(f"✓ 加载历史数据成功，包含 {len(data)} 个品种")
+        return data
+    except Exception as e:
+        print(f"✗ 加载历史数据失败: {e}")
+        return None
+
+def save_historical_data(data):
+    """保存数据到JSON文件"""
+    try:
+        DATA_DIR.mkdir(exist_ok=True)
+        with open(HISTORICAL_DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"✓ 历史数据已保存到 {HISTORICAL_DATA_FILE}")
+        return True
+    except Exception as e:
+        print(f"✗ 保存历史数据失败: {e}")
+        return False
+
+def get_last_update_date():
+    """读取最后更新日期"""
+    if not LAST_UPDATE_FILE.exists():
+        return None
+
+    try:
+        with open(LAST_UPDATE_FILE, 'r', encoding='utf-8') as f:
+            date_str = f.read().strip()
+        return datetime.strptime(date_str, '%Y-%m-%d').date()
+    except Exception as e:
+        print(f"✗ 读取最后更新日期失败: {e}")
+        return None
+
+def update_last_update_date(date):
+    """更新最后更新日期"""
+    try:
+        DATA_DIR.mkdir(exist_ok=True)
+        with open(LAST_UPDATE_FILE, 'w', encoding='utf-8') as f:
+            f.write(date.strftime('%Y-%m-%d'))
+        return True
+    except Exception as e:
+        print(f"✗ 更新最后更新日期失败: {e}")
+        return False
+
+def merge_chemical_data(historical_data, new_df, symbol):
+    """合并历史数据和新数据"""
+    # 将历史数据转换为DataFrame
+    if symbol in historical_data and len(historical_data[symbol]) > 0:
+        hist_df = pd.DataFrame(historical_data[symbol])
+        hist_df['date'] = pd.to_datetime(hist_df['date']).dt.strftime('%Y-%m-%d')
+    else:
+        hist_df = pd.DataFrame(columns=['date', 'spot_price'])
+
+    # 准备新数据
+    new_data = new_df[new_df['symbol'] == symbol].copy()
+    if len(new_data) > 0:
+        new_data = new_data[['date', 'spot_price']]
+        new_data['date'] = pd.to_datetime(new_data['date']).dt.strftime('%Y-%m-%d')
+
+    # 合并数据
+    merged_df = pd.concat([hist_df, new_data], ignore_index=True)
+
+    # 去重（保留最新的数据）
+    merged_df = merged_df.drop_duplicates(subset=['date'], keep='last')
+
+    # 按日期排序
+    merged_df = merged_df.sort_values('date')
+
+    # 只保留最近365天的数据
+    if len(merged_df) > 0:
+        merged_df['date_dt'] = pd.to_datetime(merged_df['date'])
+        cutoff_date = merged_df['date_dt'].max() - timedelta(days=365)
+        merged_df = merged_df[merged_df['date_dt'] >= cutoff_date]
+        merged_df = merged_df.drop(columns=['date_dt'])
+
+    # 转换为字典列表
+    return merged_df.to_dict('records')
 
 def calculate_period_change(df, symbol, days):
     """计算指定周期的涨跌幅（按日历天数）"""
@@ -154,12 +245,10 @@ def generate_akshare_html_fast():
             {'name': '卫星化学', 'code': '002648'}
         ],
         '苯乙烯': [
-            {'name': '荣盛石化', 'code': '002493'},
-            {'name': '华锦股份', 'code': '000059'},
-            {'name': '恒力石化', 'code': '600346'},
             {'name': '万华化学', 'code': '600309'},
-            {'name': '卫星化学', 'code': '002648'},
-            {'name': '齐翔腾达', 'code': '002408'}
+            {'name': '齐翔腾达', 'code': '002408'},
+            {'name': '华锦股份', 'code': '000059'},
+            {'name': '卫星化学', 'code': '002648'}
         ],
         'PX': [
             {'name': '荣盛石化', 'code': '002493'},
@@ -264,23 +353,60 @@ def generate_akshare_html_fast():
         ]
     }
 
-    # 一次性获取所有品种近1年的数据
-    end_date = datetime.now()
-    start_date = end_date - timedelta(days=400)  # 多取一些天数确保有足够数据
+    # 检查是否存在历史数据
+    historical_data = load_historical_data()
+    last_update = get_last_update_date()
 
-    print(f"\n正在获取 {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')} 的数据...")
-    print("这可能需要1-2分钟，请稍候...\n")
+    end_date = datetime.now()
+
+    # 判断是增量更新还是完整获取
+    if historical_data and last_update:
+        # 增量更新：只获取最近10天的数据
+        start_date = last_update - timedelta(days=1)  # 从上次更新前一天开始，确保数据连续
+        print(f"\n检测到历史数据（最后更新: {last_update}）")
+        print(f"正在增量获取 {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')} 的数据...")
+        print("预计耗时: 30-60秒\n")
+    else:
+        # 首次运行：获取完整400天数据
+        start_date = end_date - timedelta(days=400)
+        print(f"\n首次运行，正在获取完整历史数据...")
+        print(f"时间范围: {start_date.strftime('%Y-%m-%d')} 至 {end_date.strftime('%Y-%m-%d')}")
+        print("这可能需要8-10分钟，请稍候...\n")
+        historical_data = {}
 
     try:
-        # 一次性获取所有品种的历史数据
-        df_all = ak.futures_spot_price_daily(
+        # 获取数据
+        df_new = ak.futures_spot_price_daily(
             start_day=start_date.strftime('%Y%m%d'),
             end_day=end_date.strftime('%Y%m%d'),
             vars_list=list(chemicals.keys())
         )
 
-        print(f"✓ 数据获取成功！共 {len(df_all)} 条记录")
-        print(f"✓ 包含品种: {df_all['symbol'].unique().tolist()}\n")
+        print(f"✓ 数据获取成功！共 {len(df_new)} 条新记录")
+        print(f"✓ 包含品种: {df_new['symbol'].unique().tolist()}\n")
+
+        # 合并历史数据和新数据
+        print("正在合并数据...")
+        merged_data = {}
+        for symbol in chemicals.keys():
+            merged_data[symbol] = merge_chemical_data(historical_data, df_new, symbol)
+
+        # 保存合并后的数据
+        save_historical_data(merged_data)
+        update_last_update_date(end_date.date())
+
+        # 将合并后的数据转换为DataFrame用于后续处理
+        df_all_list = []
+        for symbol, records in merged_data.items():
+            for record in records:
+                df_all_list.append({
+                    'symbol': symbol,
+                    'date': record['date'],
+                    'spot_price': record['spot_price']
+                })
+        df_all = pd.DataFrame(df_all_list)
+
+        print(f"✓ 数据合并完成！总计 {len(df_all)} 条记录\n")
 
     except Exception as e:
         print(f"✗ 数据获取失败: {e}")

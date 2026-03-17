@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 数据文件（可选）
+# 如果不想提交历史数据到git，取消下面两行的注释
+# data/chemical_prices.json
+# data/last_update.txt
+
+# 注意：建议保留 data/ 目录中的文件，这样 GitHub Actions 可以利用历史数据进行增量更新
+# 如果删除这些文件，每次运行都会重新获取400天的完整数据
