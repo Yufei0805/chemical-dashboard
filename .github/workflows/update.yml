@@ -9,13 +9,16 @@ on:
 jobs:
   update-data:
     runs-on: ubuntu-latest
+    # 🔥 这里加一行权限，解决部署失败
+    permissions:
+      contents: write
 
     steps:
     - name: 检出代码
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: 设置Python环境
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -27,10 +30,13 @@ jobs:
       run: |
         python generate_akshare_dashboard_fast.py
 
+    # 🔥 只升级了部署版本，完全保持你原来的逻辑
     - name: 部署到GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./
         publish_branch: gh-pages
         keep_files: false
+        user_name: "github-actions[bot]"
+        user_email: "github-actions[bot]@users.noreply.github.com"
